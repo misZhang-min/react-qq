@@ -1,0 +1,182 @@
+ <!DOCTYPE html>
+ <html lang="en">
+ <head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+   <title>Document</title>
+   <style type="text/css">
+    *{margin:0;padding:0;}
+    .slide{width:600px;height:400px;position: relative;overflow: hidden;margin:10px auto;}
+    .viewbox{width:6000px;height:400px;position: absolute;left:-600px;}
+      .viewbox li{float: left;width:600px;height:400px;list-style:none;position: relative;}
+        .viewbox li img{width:100%;height:100%;}
+    .arrow p{
+      position: absolute;
+      width:30px;
+      height: 50px;
+      line-height: 50px;
+      color:#fff;
+      background: rgba(0,0,0,0.5);
+      text-align: center;
+      top:50%;
+      margin-top:-25px;
+      cursor:pointer;
+      font-size:30px;
+    }
+    .arrow .prev{left:0;}
+    .arrow .next{right:0;}
+    .dots li{
+      width:8px;
+      height:8px;
+      background: deepskyblue;
+      border-radius:50%;
+      margin:0 5px;
+      float: left;
+      list-style: none;
+      border:1px solid deepskyblue;
+    }
+    .dots{
+      position: absolute;
+      bottom:50px;
+      width:100px;
+      height:10px;
+      left:50%;
+      margin-left:-50px;
+    }
+    .dots li.active{background: #fff;}
+    .viewbox li div{
+      width:100%;
+      position: absolute;
+      line-height:40px;
+      background: rgba(0,0,0,.5);
+      bottom:0;
+      left:0;
+      text-align: center;
+      color:#fff;
+    }
+    
+  </style>
+ </head>
+ <body>
+  <div class="slide">
+    <ul class="viewbox">
+      <li><img src="http://img5.imgtn.bdimg.com/it/u=3905331601,2485999256&fm=26&gp=0.jpg" alt="" /></li>
+      <li><img src="http://img2.imgtn.bdimg.com/it/u=1344996754,553300684&fm=26&gp=0.jpg" alt="" /></li>
+      <li><img src="http://img1.imgtn.bdimg.com/it/u=4018557288,1217151095&fm=26&gp=0.jpg" alt="" /></li>
+      <li><img src="http://img0.imgtn.bdimg.com/it/u=1832270622,186182562&fm=26&gp=0.jpg" alt="" /></li>
+    </ul>
+    <div class="arrow">
+      <p class="prev"><</p>
+      <p class="next">></p>
+    </div>
+    <ul class="dots">
+      <li class="active"></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+    </ul>
+  </div>
+
+<script>
+  var slide=document.querySelector(".slide")
+  var viewbox=document.getElementsByClassName("viewbox")[0]
+  var prev=document.getElementsByClassName("prev")[0]
+  var next=document.getElementsByClassName("next")[0]
+  var dots=document.getElementsByClassName("dots")[0]
+  var aLi=dots.getElementsByTagName("li")
+  var p=document.getElementsByClassName("p")    
+  var index=1
+  next.οnclick=function(){
+    console.log(index);
+    if(index>=6){
+      index=1
+      viewbox.style.left="-600px"
+    }
+    index++
+    startMove(viewbox,"left",-index*600)
+    
+    for (var i = 0; i < aLi.length; i++) {
+      aLi[i].className=""
+    }
+    if(index>=6){
+      aLi[0].className="active"
+    }else{
+      aLi[index-1].className="active"
+    }
+  }
+  prev.οnclick=function(){
+    
+    if(index<=0){
+      index=5
+      viewbox.style.left="-3000px"
+    }
+    index--
+    startMove(viewbox,"left",-index*600)
+      
+
+    for (var i = 0; i < aLi.length; i++) {
+      aLi[i].className=""
+    }
+    if(index<=0){
+      aLi[4].className="active"
+    }else{
+      aLi[index-1].className="active"
+    }
+
+  }
+  for (var i = 0; i < aLi.length; i++) {
+    aLi[i].count=i
+    aLi[i].οnclick=function(){
+      for (var i = 0; i < aLi.length; i++) {
+        aLi[i].className=""
+      }
+    startMove(viewbox,"left",-(this.count+1)*600)
+      this.className="active"
+      index=this.count+1
+    }
+  }
+
+  var timer=setInterval(next.onclick,3000)
+  slide.οnmοuseleave=function(){
+    timer=setInterval(next.onclick,3000)
+  }
+  slide.οnmοuseenter=function(){
+    clearInterval(timer)
+  }
+
+
+
+  function getStyle(ele,attr){
+    return parseFloat(window.getComputedStyle(ele)[attr])
+  }
+  function startMove (ele,attr,_target,fn) {
+    clearInterval(ele.timer)
+    ele.timer=setInterval(function () {
+      var st=getStyle(ele,attr)
+      var speed=(_target-st)/10
+      if(attr=="opacity"){
+        st=st*100
+        speed=(_target-st)/10
+      }
+      speed>0?speed=Math.ceil(speed):speed=Math.floor(speed)
+      if(st==_target){
+        clearInterval(ele.timer)
+        if(fn){
+          fn()
+        }
+      }else{
+        if(attr=="opacity"){
+          st+=speed
+          ele.style.filter="alpha(opacity="+st+")"
+          ele.style.opacity=st/100
+        }else{
+          ele.style[attr]=st+speed+"px"
+        }
+      }
+    },20)
+  }
+</script>
+ </body>
+ </html>
